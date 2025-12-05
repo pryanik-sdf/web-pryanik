@@ -5,6 +5,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
 const { exec } = require('child_process');
 const WebSocket = require('ws');
+const fs = require('fs');
 // const pty = require('node-pty'); // Раскомментировать на Ubuntu
 
 const app = express();
@@ -22,10 +23,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 
-// Простая локальная стратегия аутентификации (только admin)
+// Аутентификация: логин 'admin', пароль от сервера (здесь упрощено, замените на чтение из файла или хэширование)
+const serverPassword = 'root_password_here'; // Замените на чтение из /etc/shadow или безопасный способ
 passport.use(new LocalStrategy(
   function(username, password, done) {
-    if (username === 'admin' && password === 'admin_pass') {
+    if (username === 'admin' && password === serverPassword) {
       return done(null, { username: username });
     } else {
       return done(null, false, { message: 'Неверные учетные данные.' });
@@ -90,13 +92,13 @@ app.get('/packages', (req, res) => {
   });
 });
 
-// Удалить пакет
+// Удалить пакет (с sudo для полного доступа)
 app.delete('/packages/:package', (req, res) => {
   const packageName = req.params.package;
-  exec(`apt-get remove --yes ${packageName}`, (error, stdout, stderr) => {
+  exec(`sudo apt-get remove --yes --purge ${packageName}`, (error, stdout, stderr) => {
     if (error) {
       console.error('Ошибка удаления пакета:', error);
-      return res.status(500).send('Ошибка удаления пакета');
+      return res.status(500).send('Ошибка удаления пакета: ' + stderr);
     }
     res.send('Пакет удален');
   });
