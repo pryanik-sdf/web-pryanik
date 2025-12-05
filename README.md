@@ -20,7 +20,7 @@ Web-утилита для Ubuntu Linux, аналог Webmin, с функциям
 1. Склонируйте репозиторий и запустите инсталляцию:
    ```
    git clone https://github.com/pryanik-sdf/web-pryanik.git
-   cd webutility
+   cd web-pryanik
    sudo ./install.sh
    ```
 
