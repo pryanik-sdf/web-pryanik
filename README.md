@@ -103,6 +103,21 @@ Environment=SSL_KEY=/etc/ssl/private/webutility.key SSL_CERT=/etc/ssl/certs/webu
 
 И измените порт на 443 в файл прyanikweb.service.
 
+## Удаление
+
+Для удаления WebUtility:
+```
+sudo systemctl stop pryanikweb
+sudo systemctl disable pryanikweb
+sudo rm /etc/systemd/system/pryanikweb.service
+sudo systemctl daemon-reload
+cd /path/to/webutility
+npm unlink  # если установлена глобально
+cd ..
+rm -rf web-pryanik
+sudo rm -f /etc/ssl/private/webutility.key /etc/ssl/certs/webutility.crt  # опционально, если не нужны SSL сертификаты
+```
+
 ## Лицензия
 
 ISC
