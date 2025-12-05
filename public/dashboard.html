@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>WebUtility - Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    h1 { text-align: center; }
+    .logout { position: absolute; top: 20px; right: 20px; }
+    .tabs { display: flex; margin-bottom: 20px; }
+    .tab { padding: 10px 20px; cursor: pointer; background: #ddd; border-radius: 5px; margin-right: 10px; }
+    .tab.active { background: #007bff; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ccc; }
+    button { padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #c82333; }
+    #console { background: black; color: green; padding: 10px; font-family: monospace; height: 300px; overflow-y: scroll; }
+    #command-input { width: 100%; padding: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WebUtility Dashboard</h1>
+    <a href="/logout" class="logout">Выход</a>
+    <div class="tabs">
+      <div class="tab active" data-tab="packages">Установленные модули</div>
+      <div class="tab" data-tab="console">Консоль</div>
+    </div>
+    <div id="packages" class="tab-content active">
+      <ul id="package-list"></ul>
+    </div>
+    <div id="console" class="tab-content">
+      <div id="console-output" style="background: black; color: green; padding: 10px; font-family: monospace; height: 300px; overflow-y: scroll;"></div>
+      <input id="command-input" type="text" placeholder="Введите команду">
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    $(document).ready(function() {
+      loadPackages();
+
+      $('.tab').click(function() {
+        const tab = $(this).data('tab');
+        $('.tab').removeClass('active');
+        $(this).addClass('active');
+        $('.tab-content').removeClass('active');
+        $('#' + tab).addClass('active');
+        if (tab === 'console') {
+          initConsole();
+        }
+      });
+
+      function loadPackages() {
+        $.get('/api/packages', function(packages) {
+          $('#package-list').empty();
+          packages.forEach(pkg => {
+            $('#package-list').append(`<li>${pkg.name} <button onclick="removePackage('${pkg.name}')">Удалить</button></li>`);
+          });
+        });
+      }
+
+      window.removePackage = function(name) {
+        $.post('/api/packages/' + name + '/remove', function() {
+          loadPackages();
+        });
+      };
+
+      let socket;
+      function initConsole() {
+        if (!socket) {
+          socket = io();
+          socket.emit('authenticate');
+          socket.on('output', function(data) {
+            $('#console-output').append(data);
+            $('#console-output').scrollTop($('#console-output').prop('scrollHeight'));
+          });
+          $('#command-input').keydown(function(e) {
+            if (e.key === 'Enter') {
+              socket.emit('command', $(this).val());
+              $(this).val('');
+            }
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>
