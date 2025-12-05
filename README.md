@@ -17,11 +17,20 @@ Web-утилита для Ubuntu Linux, аналог Webmin, с функциям
 
 ## Установка и запуск
 
-1. Склонируйте репозиторий:
+1. Склонируйте репозиторий и запустите инсталляцию:
    ```
    git clone https://github.com/pryanik-sdf/web-pryanik.git
    cd webutility
+   sudo ./install.sh
    ```
+
+Это установит зависимости, настроит SSL, systemd сервис и запустит приложение автоматически на https://localhost.
+
+Теперь установлена глобальная команда `pryanikweb -v` для показа версии.
+
+### Альтернативно: ручная установка
+
+Если не хотите автоматическую установку:
 
 2. Установите зависимости:
    ```
@@ -40,6 +49,7 @@ Web-утилита для Ubuntu Linux, аналог Webmin, с функциям
      sudo cp pryanikweb.service /etc/systemd/system/
      ```
    - Отредактируйте файл, заменив `/path/to/webutility` на абсолютный путь к проекту.
+   - Добавьте Environment для SSL.
    - Выполните:
      ```
      sudo systemctl daemon-reload
@@ -47,11 +57,11 @@ Web-утилита для Ubuntu Linux, аналог Webmin, с функциям
      sudo systemctl start pryanikweb
      ```
 
-5. Откройте браузер и перейдите по адресу http://localhost:3000
+5. Откройте браузер по адресу https://localhost
 
 6. Также можно запустить вручную как root:
    ```
-   sudo npm start
+   sudo node index.js
    ```
 
 ## Безопасность
