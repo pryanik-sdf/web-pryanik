@@ -144,8 +144,8 @@ if (process.env.SSL_KEY && process.env.SSL_CERT) {
     cert: fs.readFileSync(process.env.SSL_CERT)
   };
   server = https.createServer(sslOptions, app);
-  server.listen(443, () => {
-    console.log('WebUtility server listening at https://localhost:443');
+  server.listen(19214, () => {
+    console.log('WebUtility server listening at https://localhost:19214');
   });
 } else {
   server = app.listen(port, () => {
