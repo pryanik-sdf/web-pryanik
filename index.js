@@ -5,6 +5,13 @@ const LocalStrategy = require('passport-local').Strategy;
 const path = require('path');
 const { spawn } = require('child_process');
 const SocketIO = require('socket.io');
+const pkg = require('./package.json');
+
+// CLI args handling
+if (process.argv[2] === '-v') {
+  console.log(pkg.version);
+  process.exit(0);
+}
 
 const app = express();
 const port = 3000;

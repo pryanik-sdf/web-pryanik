@@ -14,6 +14,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": {
+    "pryanikweb": "./index.js"
+  },
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/pryanik-sdf/web-pryanik/issues"

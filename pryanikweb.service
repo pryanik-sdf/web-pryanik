@@ -1,0 +1,16 @@
+[Unit]
+Description=WebUtility - Web clone of Webmin for Ubuntu
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /path/to/webutility/index.js
+WorkingDirectory=/path/to/webutility
+User=root
+Restart=always
+RestartSec=10
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+[Install]
+WantedBy=multi-user.target
