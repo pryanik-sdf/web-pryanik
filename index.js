@@ -5,6 +5,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const path = require('path');
 const { spawn } = require('child_process');
 const SocketIO = require('socket.io');
+const https = require('https');
+const fs = require('fs');
 const pkg = require('./package.json');
 
 // CLI args handling
@@ -135,9 +137,21 @@ app.post('/api/packages/:name/remove', ensureAuthenticated, (req, res) => {
 // Serve static files
 app.use(express.static('public'));
 
-const server = app.listen(port, () => {
-  console.log(`WebUtility server listening at http://localhost:${port}`);
-});
+let server;
+if (process.env.SSL_KEY && process.env.SSL_CERT) {
+  const sslOptions = {
+    key: fs.readFileSync(process.env.SSL_KEY),
+    cert: fs.readFileSync(process.env.SSL_CERT)
+  };
+  server = https.createServer(sslOptions, app);
+  server.listen(443, () => {
+    console.log('WebUtility server listening at https://localhost:443');
+  });
+} else {
+  server = app.listen(port, () => {
+    console.log(`WebUtility server listening at http://localhost:${port}`);
+  });
+}
 
 // Socket.IO for console
 const io = SocketIO(server);

@@ -62,8 +62,36 @@ Web-утилита для Ubuntu Linux, аналог Webmin, с функциям
 
 ## Конфигурация
 
-- Порт сервера: 3000 (можно изменить в index.js)
+- Порт сервера: 3000 (без SSL), 443 (с SSL)
 - Секрет сессии: измените 'webmin-clone-secret' в index.js
+
+## SSL Поддержка
+
+Для включения HTTPS, установите переменные окружения `SSL_KEY` и `SSL_CERT`:
+
+```
+export SSL_KEY=/path/to/private_key.pem
+export SSL_CERT=/path/to/certificate.pem
+```
+
+Сервер будет слушать на порту 443.
+
+Для самоподписанного сертификата:
+
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/webutility.key -out /etc/ssl/certs/webutility.crt
+sudo chown root:root /etc/ssl/private/webutility.key /etc/ssl/certs/webutility.crt
+sudo chmod 600 /etc/ssl/private/webutility.key
+sudo chmod 644 /etc/ssl/certs/webutility.crt
+```
+
+Затем добавьте в systemd service:
+
+```
+Environment=SSL_KEY=/etc/ssl/private/webutility.key SSL_CERT=/etc/ssl/certs/webutility.crt
+```
+
+И измените порт на 443 в файл прyanikweb.service.
 
 ## Лицензия
 
